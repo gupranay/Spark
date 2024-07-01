@@ -5,7 +5,8 @@ import pandas as pd
 import re
 
 def send_data_to_make(industry):
-    make_webhook_url = f'https://hook.us1.make.com/rru8an438cktoaf51f3j8pd86oiigmqt?industry={industry}'
+    secret_url = st.secrets["MAKE_URL"]
+    make_webhook_url = f'{secret_url}?industry={industry}'
 
     # Send the POST request
     response = requests.post(make_webhook_url, data={})
