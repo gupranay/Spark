@@ -64,6 +64,7 @@ def extract_rows(data):
     return extracted_data, column_headers
 
 def main():
+    st.set_page_config(page_title="Consultant Finder")
     st.title("Pull Consultant Data from Salesforce")
 
     # Dictionary of categories and their corresponding IDs
