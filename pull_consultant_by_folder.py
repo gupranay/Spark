@@ -5,7 +5,6 @@ import json
 from bs4 import BeautifulSoup
 
 def send_data_to_make(category_id):
-    # st.write(category_id)
     secret_url = st.secrets["MAKE_URL_V2"]
     
     make_webhook_url = f'{secret_url}?category_id={category_id}'
@@ -18,10 +17,7 @@ def send_data_to_make(category_id):
         response_text = response.text.strip()
         
         if response_text:
-            # st.write("Response from Make:")
-            # st.write(response_text)
             try:
-                # Parse the JSON response
                 json_data = json.loads(response_text)
                 return json_data
             except json.JSONDecodeError:
@@ -36,7 +32,6 @@ def send_data_to_make(category_id):
         return None
 
 def extract_rows(data):
-    # Extract column headers
     columns_info = data['reportExtendedMetadata']['detailColumnInfo']
     column_headers = [value['label'] for value in columns_info.values()]
     
@@ -46,14 +41,13 @@ def extract_rows(data):
     for key, group in fact_map.items():
         if key == '3!T' or key == '4!T':
             continue
-        
+
         rows = group["rows"]
         for row in rows:
             row_data = {}
             for i, cell in enumerate(row["dataCells"]):
                 column_name = column_headers[i]
                 cell_value = cell.get("label", "")
-                # If cell value contains HTML, parse and extract the link text
                 if "<a href=" in cell_value:
                     soup = BeautifulSoup(cell_value, "html.parser")
                     link = soup.find("a")
@@ -65,10 +59,8 @@ def extract_rows(data):
     return extracted_data, column_headers
 
 def main():
-    st.set_page_config(page_title="Spark Consultant Finder")
     st.title("Pull Consultant Data from Salesforce")
 
-    # Dictionary of categories and their corresponding IDs
     categories = {
         "Video": "00O38000004giwtEAA",
         "Branding": "00O38000004ghWpEAI",
@@ -97,25 +89,34 @@ def main():
         "Writers": "00O4z000006OiN5EAK"
     }
 
-    # Create a dropdown for category selection
     selected_category_name = st.selectbox("Select a category of consultants", list(categories.keys()))
 
-    # Find the corresponding ID for the selected category name
     selected_category_id = categories[selected_category_name]
 
-    # Add a button to trigger the sending of data to Make
     if st.button("Pull Data"):
         json_data = send_data_to_make(selected_category_id)
         if json_data:
-            # Extract relevant data from JSON
             extracted_data, column_headers = extract_rows(json_data)
             
-            # Convert the extracted data to a DataFrame
             df = pd.DataFrame(extracted_data, columns=column_headers)
             
-            # Display the DataFrame in Streamlit
-            # st.write("Extracted Data")
-            st.dataframe(df)
+            st.session_state['dataframe'] = df
+            st.session_state['column_headers'] = column_headers
+
+    if 'dataframe' in st.session_state:
+        df = st.session_state['dataframe']
+        column_headers = st.session_state['column_headers']
+        search_value = st.text_input("Enter search value")
+
+        if search_value:
+            filtered_df = df[
+                df['Description'].str.contains(search_value, case=False, na=False) |
+                df['Functional Expertise'].str.contains(search_value, case=False, na=False)
+            ]
+        else:
+            filtered_df = df
+        
+        st.dataframe(filtered_df)
 
 if __name__ == "__main__":
     main()
