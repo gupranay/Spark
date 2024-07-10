@@ -44,7 +44,7 @@ def extract_rows(data):
     fact_map = data['factMap']
     
     for key, group in fact_map.items():
-        if key == '3!T' or key == '4!5':
+        if key == '3!T' or key == '4!T':
             continue
         
         rows = group["rows"]
