@@ -59,7 +59,7 @@ def extract_rows(data):
     return extracted_data, column_headers
 
 def main():
-    st.set_page_config(page_title="Spark Consultant Data", page_icon="⚡️")
+    st.set_page_config(page_title="Spark Consultant Data", page_icon="⚡️", layout="wide")
     st.title("Pull Consultant Data from Salesforce")
 
 
