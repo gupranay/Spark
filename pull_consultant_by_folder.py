@@ -13,7 +13,7 @@ def send_data_to_make(category_id):
     response = requests.request("POST", make_webhook_url, data=payload)
 
     if response.status_code == 200:
-        st.success("Pulled data from Salesforce successfully.")
+        # st.success("Pulled data from Salesforce successfully.")
         response_text = response.text.strip()
         
         if response_text:
@@ -59,7 +59,9 @@ def extract_rows(data):
     return extracted_data, column_headers
 
 def main():
+    st.set_page_config(page_title="Spark Consultant Data", page_icon="⚡️")
     st.title("Pull Consultant Data from Salesforce")
+
 
     categories = {
         "Video": "00O38000004giwtEAA",
