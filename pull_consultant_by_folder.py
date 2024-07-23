@@ -62,14 +62,12 @@ def main():
     st.set_page_config(page_title="Spark Consultant Data", page_icon="⚡️", layout="wide")
     st.title("Pull Consultant Data from Salesforce")
 
-
+    
     categories = {
-        "Video": "00O38000004giwtEAA",
         "Branding": "00O38000004ghWpEAI",
         "Designers": "00O38000004gR4TEAU",
         "Website": "00O38000004ghMuEAI",
         "UI/UX": "00O38000004eUfBEAU",
-        "All": "00O38000004QRwJEAW",
         "Marketing": "00O38000004ghMBEAY",
         "Accountants": "00O38000004gR4OEAU",
         "AR/VR": "00O0z000005I1NQEA0",
@@ -78,12 +76,7 @@ def main():
         "Software": "00O38000004stl2EAA",
         "HR": "00O0z000005TmfdEAC",
         "PR/Communications Consultants": "00O4z0000064iFkEAI",
-        "UI/Ux, Software Development Contacts": "00O4z0000064t8QEAQ",
-        "Legal/ Intellectual Property Contacts": "00O4z0000064tA2EAI",
         "EIR": "00O38000004spAvEAI",
-        "Insurance (8-21)": "00O4z0000061DkMEAU",
-        "Mobility Consultants": "00O4z0000061GZ7EAM",
-        "Consumer Products and Services Industry": "00O4z0000061N75EAE",
         "Insurance": "00O4z0000064w8nEAA",
         "Photography": "00O4z0000069k6CEAQ",
         "IP": "00O38000004gR4JEAU",
