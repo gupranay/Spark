@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import json
 from bs4 import BeautifulSoup
+from PIL import Image
 
 def send_data_to_make(category_id):
     secret_url = st.secrets["MAKE_URL_V2"]
@@ -13,7 +14,6 @@ def send_data_to_make(category_id):
     response = requests.request("POST", make_webhook_url, data=payload)
 
     if response.status_code == 200:
-        # st.success("Pulled data from Salesforce successfully.")
         response_text = response.text.strip()
         
         if response_text:
@@ -33,8 +33,8 @@ def send_data_to_make(category_id):
 
 def extract_rows(data):
     columns_info = data['reportExtendedMetadata']['detailColumnInfo']
-    column_headers = [value['label'] for value in columns_info.values()]
-    
+    column_headers = ['*'] + [value['label'] for value in columns_info.values()]  # Add a column for the warning icon
+
     extracted_data = []
     fact_map = data['factMap']
     
@@ -46,7 +46,7 @@ def extract_rows(data):
         for row in rows:
             row_data = {}
             for i, cell in enumerate(row["dataCells"]):
-                column_name = column_headers[i]
+                column_name = column_headers[i + 1]  # Offset by 1 due to the warning icon column
                 cell_value = cell.get("label", "")
                 if "<a href=" in cell_value:
                     soup = BeautifulSoup(cell_value, "html.parser")
@@ -54,15 +54,23 @@ def extract_rows(data):
                     if link and link.text:
                         cell_value = link.text.strip()
                 row_data[column_name] = cell_value
+
+            # Add a warning icon if the key is '2!T'
+            if key == '2!T':
+                row_data['*'] = '*'
+            else:
+                row_data['*'] = ''
+
             extracted_data.append(row_data)
     
     return extracted_data, column_headers
 
 def main():
-    st.set_page_config(page_title="Spark Consultant Data", page_icon="⚡️", layout="wide")
+    im = Image.open("spark_logo.png")
+    st.set_page_config(page_title="Spark Consultant Data", page_icon=im, layout="wide")
     st.title("Pull Consultant Data from Salesforce")
+    # "⚡️"
 
-    
     categories = {
         "Branding": "00O38000004ghWpEAI",
         "Designers": "00O38000004gR4TEAU",
@@ -85,7 +93,6 @@ def main():
     }
 
     selected_category_name = st.selectbox("Select a category of consultants", list(categories.keys()))
-
     selected_category_id = categories[selected_category_name]
 
     if st.button("Pull Data"):
@@ -112,6 +119,11 @@ def main():
             filtered_df = df
         
         st.dataframe(filtered_df)
+
+        # Display note explaining the warning icon
+        st.markdown("""
+        **Note:** Rows marked with * indicate that the vendor is not an established vendor with Spark and Spark holds no responsibility.
+        """)
 
 if __name__ == "__main__":
     main()
