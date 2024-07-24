@@ -3,4 +3,3 @@ requests
 pandas
 beautifulsoup4
 Image
-PIL
